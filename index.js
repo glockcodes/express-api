@@ -5,8 +5,14 @@ const app = express();
 // Create a port variable
 const port = 80;
 
+// Require the filesystem module
+const fs = require('fs');
 // Require the os module
 const os = require('os');
+// Require the config module
+const config = require('./config');
+// Require the request module
+const request = require('request');
 
 // Remove a part of a string
 const removeString = (str, remove) => {
@@ -18,14 +24,42 @@ const jsonResponse = (res, data) => {
     return JSON.stringify({success: res, data: data});
 }
 
+// Send a request to a webhook
+const sendWebhook = (url, message) =>{
+    request.post(url, {
+        json: {
+            content: message
+        }
+    });
+}
+
 // Log all requests
 app.use(function(req, res, next) {
     // Get the current date and time
     const date = new Date();
     const time = date.toLocaleTimeString();
 
-    // Log the request
-    console.log(`${time} - ${req.method} ${req.url}`);
+    // Check if console logging is enabled
+    if (config.logging.console) {
+        // Log the request to the console
+        console.log(`${time} - ${req.method} ${req.url}`);
+    }
+
+    // Check if webhook logging is enabled by checking if the webhook url is set
+    if (config.logging.webhook.length > 0) {
+        // Log the request to the webhook
+        sendWebhook(config.logging.webhook, `${time} - ${req.method} ${req.url}`)
+    }
+
+    // Check if file logging is enabled
+    if (config.logging.file) {
+        // Log the request to the file
+        fs.appendFile('./requestLogs.txt', `${time} - ${req.method} ${req.url}\n`, function(err) {
+            if (err) {
+                return console.log(err);
+            }
+        });
+    }
 
     // Continue to the next middleware
     next();
@@ -54,14 +88,9 @@ app.get('/api', function(req, res) {
     // Parse the IP address
     const parsedIp = removeString(unparsedIp, '::ffff:');
 
-    // List of blacklisted IP addresses
-    const blacklistedIps = [
-        'xxx.xxx.xxx.xxx',
-    ];
-
-    // Check if the IP is blacklisted
-    if (blacklistedIps.includes(parsedIp)) {
-        return res.send(jsonResponse(false, 'Blacklisted IP address'));
+    // Check if the client's IP is blacklisted
+    if (config.database.blacklistedIps.includes(parsedIp)) {
+        return res.send(jsonResponse(false, 'IP address is blacklisted'));
     }
 
     // Create two variables to store the key and data
@@ -72,29 +101,15 @@ app.get('/api', function(req, res) {
     if (!key || !data) {
         return res.send(jsonResponse(false, 'Invalid parameters'));
     }
-
-    // List of blacklisted API keys
-    const blacklistedKeys = [
-        'xxx',
-    ];
-
     // Check if the API key is blacklisted
-    if (blacklistedKeys.includes(key)) {
-        return res.send(jsonResponse(false, 'Blacklisted API key'));
+    if (config.database.blacklistedKeys.includes(key)) {
+        return res.send(jsonResponse(false, 'API key is blacklisted'));
     }
-
-    // List of whitelisted API keys
-    const whitelistedKeys = [
-        'key',
-    ];
 
     // Check if the API key is whitelisted
-    if (!whitelistedKeys.includes(key)) {
-        return res.send(jsonResponse(false, 'Invalid API key'));
+    if (!config.database.whitelistedKeys.includes(key)) {
+        return res.send(jsonResponse(false, 'API key is not whitelisted'));
     }
-
-    // Log the request with the IP address, API key, and data
-    console.log(`${parsedIp} - ${key} - ${data}`);
 
     // Return a json object with the success status and the data
     return res.send(jsonResponse(true, data));
