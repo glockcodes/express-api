@@ -9,11 +9,9 @@ Basic API made with NodeJS utilizing express
 * Unique API keys manually created
 * IP address blacklisting
 * API key blacklisting
-* Successful request logging
+* Discord webhook integration
 
 **To-do list**
-- [ ] Add discord webhook integration for request logging.
-- [ ] Storing all important data inside of files instead of arrays.
 - [ ] Create a new route to generate unique api keys.
 
 ### **Usage**
