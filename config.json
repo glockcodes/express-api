@@ -1,0 +1,21 @@
+{
+    "database": {
+        "blacklistedIps": [
+            "xxx.xxx.xxx.xxx"
+        ],
+
+        "blacklistedKeys": [
+            "xxx"
+        ],
+
+        "whitelistedKeys": [
+            "yqlrxyeexmquiswibbdcnsmahrlzcans"
+        ]
+    },
+
+    "logging": {
+        "console": false,
+        "webhook": "https://discord.com/api/webhooks/xxx/xxx",
+        "file": false
+    }
+}
