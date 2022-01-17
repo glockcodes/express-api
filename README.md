@@ -13,6 +13,8 @@ Basic API made with NodeJS utilizing express
 
 **To-do list**
 - [ ] Add discord webhook integration for request logging.
+- [ ] Storing all important data inside of files instead of arrays.
+- [ ] Create a new route to generate unique api keys.
 
 ### **Usage**
 Before using, make sure you have [Node.js](https://nodejs.org) installed along with the [express](https://www.npmjs.com/package/express) package.
