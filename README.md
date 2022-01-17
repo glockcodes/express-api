@@ -15,7 +15,7 @@ Basic API made with NodeJS utilizing express
 - [ ] Create a new route to generate unique api keys.
 
 ### **Usage**
-Before using, make sure you have [Node.js](https://nodejs.org) installed along with the [express](https://www.npmjs.com/package/express) package.
+Before using, make sure you have [Node.js](https://nodejs.org), [express](https://www.npmjs.com/package/express) package, and [request](https://www.npmjs.com/package/request) package.
 
 **Installing dependencies**
 ```
